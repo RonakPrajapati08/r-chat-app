@@ -1,38 +1,215 @@
-.App {
-  text-align: center;
+.chat-page {
+  display: flex;
+  /* height: 100vh; */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+
+.chat-list {
+  width: 25%;
+  border-right: 1px solid #ddd;
+  padding: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.chat-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  cursor: pointer;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.chat-item-info p {
+  margin: 0;
+}
+
+.status.online {
+  color: green;
+}
+
+.status.offline {
+  color: red;
+}
+
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message {
+  margin: 5px 0;
+}
+
+.sent {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+}
+
+.received {
+  align-self: flex-start;
+  background-color: #fff;
+}
+
+.input-area {
+  display: flex;
+  padding: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 10px;
+}
+
+.message-area {
+  display: flex;
+  width: 75%;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100%;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #333;
+  word-wrap: break-word;
+}
+
+.message.sent {
+  background-color: #dcf8c6; /* WhatsApp-style green bubble */
+  align-self: flex-end;
+  color: #000;
+}
+
+.message.received {
+  background-color: #fff;
+  align-self: flex-start;
+  border: 1px solid #ddd;
+}
+
+.input-area {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
 }
 
-.App-link {
-  color: #61dafb;
+.input-area input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  outline: none;
+  border-radius: 20px;
+  background-color: #f1f1f1;
+  margin-right: 10px;
+  font-size: 15px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.input-area button {
+  background-color: #009688; /* WhatsApp-style send button */
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.input-area button:hover {
+  background-color: #00796b;
+}
+
+@media (max-width: 600px) {
+  .message {
+    max-width: 85%;
   }
-  to {
-    transform: rotate(360deg);
-  }
+  .chat-list {
+  width: 100%;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+}
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.chat-item-info {
+  flex: 1;
+}
+
+.status {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 10px;
+}
+
+.online {
+  background-color: green; /* Green for online */
+}
+
+.offline {
+  background-color: red; /* Red for offline */
+}
+.chat-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  position: relative; /* Required for dropdown positioning */
+}
+
+.menu-icon {
+  cursor: pointer;
+  font-size: 24px;
+  padding: 5px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 40px; /* Adjust the position of the dropdown menu */
+  right: 10px;
+  background: white;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  z-index: 1000; /* Ensure it appears above other elements */
+}
+
+.dropdown-menu button {
+  border: none;
+  background: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
+}
+
+.log-out{
+  bottom: 5px;
 }
