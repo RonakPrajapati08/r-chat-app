@@ -1,8 +1,8 @@
-// // App.js
+// App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LoginPage from "./components/LoginPage";
-// import SignUp from "./components/SignUp";
+import SignUp from "./components/SignUp";
 import ChatPage from "./components/ChatPage";
 
 function App() {
@@ -10,7 +10,7 @@ function App() {
     <Router basename="/r-chat-app">
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        {/* <Route path="/signup" element={<SignUp />} /> */}
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </Router>
@@ -22,7 +22,7 @@ export default App;
 // import React, { useState } from "react";
 // import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import LoginPage from "./components/LoginPage";
-// // import SignUp from "./components/SignUp";
+// import SignUp from "./components/SignUp";
 // import ChatPage from "./components/ChatPage";
 
 // function App() {

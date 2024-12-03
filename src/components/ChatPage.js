@@ -263,6 +263,188 @@
 //This Code is User Not select other user so then show Placeholder message
 
 // ChatPage.js
+// import React, { useState, useEffect } from "react";
+// import { auth, db } from "../firebaseConfig";
+// import { getDoc, doc } from "firebase/firestore";
+// import { onAuthStateChanged } from "firebase/auth";
+// import ChatList from "./UserList";
+// import MessageArea from "./MessageArea";
+// import { useNavigate } from "react-router-dom";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import Spinner from "react-bootstrap/Spinner";
+
+// const ChatPage = () => {
+//   const [selectedUser, setSelectedUser] = useState(null);
+//   const [currentUser, setCurrentUser] = useState(null);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const checkUserProfile = async (user) => {
+//       const userDocRef = doc(db, "users", user.uid);
+//       const docSnap = await getDoc(userDocRef);
+
+//       if (docSnap.exists()) {
+//         const userData = docSnap.data();
+//         if (!userData.name || !userData.email) {
+//           navigate("/profile-completion");
+//         }
+//       } else {
+//         navigate("/profile-completion");
+//       }
+//     };
+
+//     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+//       if (user) {
+//         setCurrentUser(user);
+//         checkUserProfile(user);
+//       } else {
+//         setCurrentUser(null);
+//         navigate("/login");
+//       }
+//     });
+
+//     return () => unsubscribeAuth();
+//   }, [navigate]);
+
+//   return (
+//     <div className="chat-page">
+//       {currentUser ? (
+//         <>
+//           <ChatList setSelectedUser={setSelectedUser} />
+//           {selectedUser ? (
+//             <MessageArea selectedUser={selectedUser} />
+//           ) : (
+//             <div className="message-area">
+//               <div
+//                 className="placeholder-message"
+//                 style={{ textAlign: "center", paddingTop: "20%" }}
+//               >
+//                 <h2>WhatsApp for Web</h2>
+//                 <p>
+//                   Send and receive messages without keeping your phone online.
+//                 </p>
+//                 <p>
+//                   Use WhatsApp on up to 4 linked devices and 1 phone at the same
+//                   time.
+//                 </p>
+//               </div>
+//             </div>
+//           )}
+//         </>
+//       ) : (
+//         <Spinner animation="border" role="status">
+//           <span className="visually-hidden">Loading...</span>
+//         </Spinner>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ChatPage;
+
+//If i refresh page navigate to Chatlist not stay in messageArea
+// import React, { useState, useEffect } from "react";
+// import { auth, db } from "../firebaseConfig";
+// import { getDoc, doc } from "firebase/firestore";
+// import { onAuthStateChanged } from "firebase/auth";
+// import ChatList from "./UserList";
+// import MessageArea from "./MessageArea";
+// import { useNavigate } from "react-router-dom";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import Spinner from "react-bootstrap/Spinner";
+
+// const ChatPage = () => {
+//   const [selectedUser, setSelectedUser] = useState(null);
+//   const [currentUser, setCurrentUser] = useState(null);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     // Prevent page refresh
+//     const handleBeforeUnload = (event) => {
+//       event.preventDefault();
+//       event.returnValue = ""; // This is required for some browsers to display the warning
+//     };
+
+//     window.addEventListener("beforeunload", handleBeforeUnload);
+
+//     return () => {
+//       window.removeEventListener("beforeunload", handleBeforeUnload);
+//     };
+//   }, []);
+
+//   useEffect(() => {
+//     const checkUserProfile = async (user) => {
+//       const userDocRef = doc(db, "users", user.uid);
+//       const docSnap = await getDoc(userDocRef);
+
+//       if (docSnap.exists()) {
+//         const userData = docSnap.data();
+//         if (!userData.name || !userData.email) {
+//           navigate("/profile-completion");
+//         }
+//       } else {
+//         navigate("/profile-completion");
+//       }
+//     };
+
+//     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+//       if (user) {
+//         setCurrentUser(user);
+//         checkUserProfile(user);
+//       } else {
+//         setCurrentUser(null);
+//         navigate("/login");
+//       }
+//     });
+
+//     return () => unsubscribeAuth();
+//   }, [navigate]);
+
+//   return (
+//     <div className="chat-page d-flex flex-column">
+//       {currentUser ? (
+//         <>
+//           {/* Chat List */}
+//           <div
+//             className="chat-list-container"
+//             style={{
+//               display: selectedUser ? "none" : "block", // Hide ChatList when MessageArea is shown
+//               width: "100%",
+//             }}
+//           >
+//             <ChatList setSelectedUser={setSelectedUser} />
+//           </div>
+
+//           {/* Message Area */}
+//           <div
+//             className="message-area-container"
+//             style={{
+//               display: selectedUser ? "block" : "none", // Show MessageArea only when a user is selected
+//               width: "100%",
+//             }}
+//           >
+//             {selectedUser ? (
+//               <MessageArea
+//                 selectedUser={selectedUser}
+//                 setSelectedUser={setSelectedUser}
+//               />
+//             ) : null}
+//           </div>
+//         </>
+//       ) : (
+//         <div className="loading-spinner text-center">
+//           <Spinner animation="border" role="status">
+//             <span className="visually-hidden">Loading...</span>
+//           </Spinner>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ChatPage;
+
+//This code is Refresh page so refreshing after stay in user messageArea dahsboard
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebaseConfig";
 import { getDoc, doc } from "firebase/firestore";
@@ -274,7 +456,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Spinner from "react-bootstrap/Spinner";
 
 const ChatPage = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(
+    JSON.parse(localStorage.getItem("selectedUser")) || null
+  );
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
@@ -306,35 +490,52 @@ const ChatPage = () => {
     return () => unsubscribeAuth();
   }, [navigate]);
 
+  // Persist selectedUser to localStorage whenever it changes
+  useEffect(() => {
+    if (selectedUser) {
+      localStorage.setItem("selectedUser", JSON.stringify(selectedUser));
+    } else {
+      localStorage.removeItem("selectedUser");
+    }
+  }, [selectedUser]);
+
   return (
-    <div className="chat-page">
+    <div className="chat-page d-flex flex-column">
       {currentUser ? (
         <>
-          <ChatList setSelectedUser={setSelectedUser} />
-          {selectedUser ? (
-            <MessageArea selectedUser={selectedUser} />
-          ) : (
-            <div className="message-area">
-              <div
-                className="placeholder-message"
-                style={{ textAlign: "center", paddingTop: "20%" }}
-              >
-                <h2>WhatsApp for Web</h2>
-                <p>
-                  Send and receive messages without keeping your phone online.
-                </p>
-                <p>
-                  Use WhatsApp on up to 4 linked devices and 1 phone at the same
-                  time.
-                </p>
-              </div>
-            </div>
-          )}
+          {/* Chat List */}
+          <div
+            className="chat-list-container"
+            style={{
+              display: selectedUser ? "none" : "block", // Hide ChatList when MessageArea is shown
+              width: "100%",
+            }}
+          >
+            <ChatList setSelectedUser={setSelectedUser} />
+          </div>
+
+          {/* Message Area */}
+          <div
+            className="message-area-container"
+            style={{
+              display: selectedUser ? "block" : "none", // Show MessageArea only when a user is selected
+              width: "100%",
+            }}
+          >
+            {selectedUser ? (
+              <MessageArea
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+              />
+            ) : null}
+          </div>
         </>
       ) : (
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+        <div className="loading-spinner text-center">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
       )}
     </div>
   );

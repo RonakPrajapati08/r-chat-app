@@ -62,7 +62,7 @@
 
 .message-area {
   display: flex;
-  width: 75%;
+  width: 100%;
   justify-content: space-between;
   flex-direction: column;
   height: 100vh;
@@ -83,8 +83,7 @@
 
 .message {
   max-width: 70%;
-  padding: 10px 15px;
-  border-radius: 20px;
+  padding: 8px 15px;
   font-size: 15px;
   line-height: 1.4;
   color: #333;
@@ -93,12 +92,16 @@
 
 .message.sent {
   background-color: #dcf8c6; /* WhatsApp-style green bubble */
+  border-radius: 10px;
+  border-start-end-radius: 0 ;
   align-self: flex-end;
   color: #000;
 }
 
 .message.received {
   background-color: #fff;
+  border-radius: 10px;
+  border-start-start-radius: 0 ;
   align-self: flex-start;
   border: 1px solid #ddd;
 }
@@ -212,4 +215,16 @@
 
 .log-out{
   bottom: 5px;
+}
+.profile-image-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
 }

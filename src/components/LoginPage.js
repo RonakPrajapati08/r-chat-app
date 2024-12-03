@@ -160,7 +160,7 @@
 
 // export default LoginPage;
 
-//FOR UI CODE
+//FOR UI CODE UPDATED CODE
 
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../firebaseConfig";
@@ -173,8 +173,18 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const handleImageUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setProfileImage(e.target.result); // Save Base64 string
+      localStorage.setItem("profileImage", e.target.result); // Save image in local storage
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     if (auth.currentUser) {
@@ -268,12 +278,25 @@ const LoginPage = () => {
                 required
               />
             </div>
+            <div className="mb-3">
+              <label htmlFor="profileImage" className="form-label">
+                Profile Image
+              </label>
+              <input
+                type="file"
+                id="profileImage"
+                className="form-control"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e.target.files[0])}
+              />
+            </div>
+
             <button type="submit" className="btn btn-primary w-100">
               Login
             </button>
           </form>
           <p className="text-center mt-3">
-            Don't have an account? <a href="/signup">Sign up here</a>
+            Don't have an account? <a href="/r-chat-app/signup">Sign up here</a>
           </p>
         </div>
       </div>

@@ -682,7 +682,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import Col from "react-bootstrap/Col";
-import Image from "react-bootstrap/Image";
 import { useNavigate } from "react-router-dom";
 
 const ChatList = ({ setSelectedUser }) => {
@@ -804,9 +803,8 @@ const ChatList = ({ setSelectedUser }) => {
   return (
     <div className="chat-list">
       <div className="d-flex justify-content-between align-items-center">
-        {/* <h3 className="fw-bold">Chats</h3> */}
         <Col xs={6} md={4}>
-          <Image className="w-50" src="./images/logo.png" roundedCircle />
+          <h3 className="fw-bold">Whatsapp</h3>
         </Col>
 
         {currentUserData && (
@@ -823,6 +821,19 @@ const ChatList = ({ setSelectedUser }) => {
                 backgroundColor: currentUserData.isOnline ? "green" : "red",
               }}
             ></span>
+            <img
+              src={
+                localStorage.getItem("profileImage") || "/default-profile.jpg"
+              }
+              alt="Profile"
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                marginRight: "8px",
+              }}
+            />
             <h3 className="fw-bold mb-0">{currentUserData.name || "User"}</h3>
           </div>
         )}
@@ -830,27 +841,41 @@ const ChatList = ({ setSelectedUser }) => {
 
       <hr />
 
-      {users.map((user) => (
-        <div
-          key={user.id}
-          onClick={() => setSelectedUser(user)}
-          className="chat-item"
-        >
-          <div className="chat-item-info">
-            <p>{user.name || "Unknown User"}</p>
-            <p>{lastMessages[user.id] || "No messages yet"}</p>
+      {users.map((user) => {
+        const userImage = localStorage.getItem(`profileImage_${user.id}`);
+        return (
+          <div
+            key={user.id}
+            onClick={() => setSelectedUser(user)}
+            className="chat-item"
+          >
+            <div className="chat-item-info">
+              <p>{user.name || "Unknown User"}</p>
+              <p>{lastMessages[user.id] || "No messages yet"}</p>
+            </div>
+            <span
+              className={`status ${user.isOnline ? "online" : "offline"}`}
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "50%",
+                backgroundColor: user.isOnline ? "green" : "red",
+              }}
+            ></span>
+            <img
+              src={userImage || "/default-profile.jpg"}
+              alt="User Profile"
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                marginLeft: "8px",
+              }}
+            />
           </div>
-          <span
-            className={`status ${user.isOnline ? "online" : "offline"}`}
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              backgroundColor: user.isOnline ? "green" : "red",
-            }}
-          ></span>
-        </div>
-      ))}
+        );
+      })}
 
       <button
         className="logout-btn log-out position-absolute px-3 rounded-3 text-bg-danger"
@@ -863,3 +888,267 @@ const ChatList = ({ setSelectedUser }) => {
 };
 
 export default ChatList;
+
+//Unread Message Counter show code
+
+// import React, { useState, useEffect } from "react";
+// import { db, auth } from "../firebaseConfig";
+// import {
+//   collection,
+//   onSnapshot,
+//   doc,
+//   getDoc,
+//   getDocs,
+//   query,
+//   orderBy,
+//   limit,
+//   where,
+//   updateDoc,
+// } from "firebase/firestore";
+// import { writeBatch } from "firebase/firestore";
+// import Col from "react-bootstrap/Col";
+// import { useNavigate } from "react-router-dom";
+
+// const ChatList = ({ setSelectedUser }) => {
+//   const [users, setUsers] = useState([]);
+//   const [currentUserData, setCurrentUserData] = useState(null);
+//   const [lastMessages, setLastMessages] = useState({});
+//   const [unreadCounts, setUnreadCounts] = useState({});
+//   const navigate = useNavigate();
+
+//   const updateUserStatus = async (status) => {
+//     const currentUser = auth.currentUser;
+//     if (currentUser) {
+//       try {
+//         const userDocRef = doc(db, "users", currentUser.uid);
+//         await updateDoc(userDocRef, { isOnline: status });
+//       } catch (error) {
+//         console.error("Error updating user status:", error);
+//       }
+//     }
+//   };
+
+//   useEffect(() => {
+//     const fetchCurrentUser = async () => {
+//       const currentUser = auth.currentUser;
+//       if (currentUser) {
+//         const userDocRef = doc(db, "users", currentUser.uid);
+//         const userDoc = await getDoc(userDocRef);
+//         if (userDoc.exists()) {
+//           setCurrentUserData({ id: currentUser.uid, ...userDoc.data() });
+//         }
+//         await updateUserStatus(true);
+//       } else {
+//         console.log("No user is currently logged in.");
+//       }
+//     };
+
+//     fetchCurrentUser();
+
+//     const unsubscribe = onSnapshot(collection(db, "users"), (snapshot) => {
+//       const onlineUsers = snapshot.docs
+//         .map((doc) => ({ id: doc.id, ...doc.data() }))
+//         .filter((user) => user.id !== auth.currentUser?.uid);
+
+//       setUsers(onlineUsers);
+//       if (auth.currentUser) {
+//         fetchLastMessages(onlineUsers);
+//         fetchUnreadCounts(onlineUsers);
+//       }
+//     });
+
+//     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
+//       if (user) {
+//         updateUserStatus(true);
+//         fetchCurrentUser();
+//       } else {
+//         setCurrentUserData(null);
+//         navigate("/login");
+//       }
+//     });
+
+//     return () => {
+//       unsubscribe();
+//       unsubscribeAuth();
+//     };
+//   }, [navigate]);
+
+//   const fetchLastMessages = async (onlineUsers) => {
+//     const currentUser = auth.currentUser;
+//     if (!currentUser) return;
+
+//     for (const user of onlineUsers) {
+//       const q = query(
+//         collection(db, "chats"),
+//         where("participants", "array-contains", currentUser.uid),
+//         orderBy("timestamp", "desc"),
+//         limit(1)
+//       );
+
+//       const querySnapshot = await getDocs(q);
+//       if (!querySnapshot.empty) {
+//         const lastMessage = querySnapshot.docs[0].data().text;
+//         setLastMessages((prevMessages) => ({
+//           ...prevMessages,
+//           [user.id]: lastMessage,
+//         }));
+//       } else {
+//         setLastMessages((prevMessages) => ({
+//           ...prevMessages,
+//           [user.id]: "No messages yet",
+//         }));
+//       }
+//     }
+//   };
+
+//   const fetchUnreadCounts = async (onlineUsers) => {
+//     const currentUser = auth.currentUser;
+//     if (!currentUser) return;
+
+//     const unreadCountsTemp = {};
+//     for (const user of onlineUsers) {
+//       const q = query(
+//         collection(db, "chats"),
+//         where("receiverId", "==", currentUser.uid),
+//         where("senderId", "==", user.id),
+//         where("isRead", "==", false) // Only unread messages
+//       );
+
+//       const querySnapshot = await getDocs(q);
+//       unreadCountsTemp[user.id] = querySnapshot.size; // Count unread messages
+//     }
+//     setUnreadCounts(unreadCountsTemp);
+//   };
+
+//   const markMessagesAsRead = async (selectedUser) => {
+//     const currentUser = auth.currentUser;
+//     if (!currentUser || !selectedUser) return;
+
+//     try {
+//       // Create a batch instance
+//       const batch = writeBatch(db);
+
+//       // Query for unread messages
+//       const q = query(
+//         collection(db, "chats"),
+//         where("receiverId", "==", currentUser.uid),
+//         where("senderId", "==", selectedUser.id),
+//         where("isRead", "==", false)
+//       );
+
+//       const querySnapshot = await getDocs(q);
+
+//       // Add each message to the batch for updating
+//       querySnapshot.forEach((doc) => {
+//         const messageRef = doc.ref;
+//         batch.update(messageRef, { isRead: true });
+//       });
+
+//       // Commit the batch
+//       await batch.commit();
+//       console.log("All messages marked as read.");
+//     } catch (error) {
+//       console.error("Error marking messages as read:", error);
+//     }
+//   };
+
+//   const handleUserClick = (user) => {
+//     setSelectedUser(user);
+//     markMessagesAsRead(user); // Mark messages as read
+//     setUnreadCounts((prevCounts) => ({ ...prevCounts, [user.id]: 0 })); // Reset unread count
+//   };
+
+//   const logout = async () => {
+//     try {
+//       await updateUserStatus(false);
+//       await auth.signOut();
+//       navigate("/", { replace: true });
+//     } catch (error) {
+//       console.error("Error during logout:", error);
+//     }
+//   };
+
+//   return (
+//     <div className="chat-list">
+//       <div className="d-flex justify-content-between align-items-center">
+//         <Col xs={6} md={4}>
+//           <h3 className="fw-bold">Whatsapp</h3>
+//         </Col>
+
+//         {currentUserData && (
+//           <div className="current-user-profile d-flex align-items-center">
+//             <span
+//               className={`status-indicator ${
+//                 currentUserData.isOnline ? "online" : "offline"
+//               }`}
+//               style={{
+//                 width: "10px",
+//                 height: "10px",
+//                 borderRadius: "50%",
+//                 marginRight: "8px",
+//                 backgroundColor: currentUserData.isOnline ? "green" : "red",
+//               }}
+//             ></span>
+//             <img
+//               src={
+//                 localStorage.getItem("profileImage") || "/default-profile.jpg"
+//               }
+//               alt="Profile"
+//               style={{
+//                 width: "40px",
+//                 height: "40px",
+//                 borderRadius: "50%",
+//                 objectFit: "cover",
+//                 marginRight: "8px",
+//               }}
+//             />
+//             <h3 className="fw-bold mb-0">{currentUserData.name || "User"}</h3>
+//           </div>
+//         )}
+//       </div>
+
+//       <hr />
+
+//       {users.map((user) => {
+//         const userImage = localStorage.getItem(`profileImage_${user.id}`);
+//         return (
+//           <div
+//             key={user.id}
+//             onClick={() => handleUserClick(user)}
+//             className="chat-item"
+//           >
+//             <div className="chat-item-info">
+//               <p>{user.name || "Unknown User"}</p>
+//               <p>{lastMessages[user.id] || "No messages yet"}</p>
+//               {unreadCounts[user.id] > 0 && (
+//                 <span className="badge bg-danger ms-2">
+//                   {unreadCounts[user.id]} new
+//                 </span>
+//               )}
+//             </div>
+//             <img
+//               src={userImage || "/default-profile.jpg"}
+//               alt="User Profile"
+//               style={{
+//                 width: "40px",
+//                 height: "40px",
+//                 borderRadius: "50%",
+//                 objectFit: "cover",
+//                 marginLeft: "8px",
+//               }}
+//             />
+//           </div>
+//         );
+//       })}
+
+//       <button
+//         className="logout-btn log-out position-absolute px-3 rounded-3 text-bg-danger"
+//         onClick={logout}
+//       >
+//         Logout
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default ChatList;

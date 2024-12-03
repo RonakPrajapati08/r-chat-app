@@ -93,6 +93,7 @@ import {
   getDoc,
   updateDoc,
 } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -112,6 +113,7 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 // Function to check and set user profile
 const checkUserProfile = async (user) => {
@@ -158,4 +160,11 @@ const updateUserStatus = async (userId, status) => {
 };
 
 // Export necessary Firebase functions and constants
-export { auth, googleProvider, facebookProvider, db, updateUserStatus };
+export {
+  auth,
+  googleProvider,
+  facebookProvider,
+  db,
+  storage,
+  updateUserStatus,
+};
